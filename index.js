@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 
-app.set('trust proxy', true);
+
 app.use(cors());
 app.get("/", (req , res) => {
   res.send("stack-overflow-backend API.");
