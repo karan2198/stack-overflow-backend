@@ -46,16 +46,18 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    const ipAddress = req.ip;
+    let ipAddress = req.ip;
     if (req.headers['x-forwarded-for']) {
       ipAddress = req.headers['x-forwarded-for'].split(',')[0].trim();
+    } else if (!ipAddress) {
+      ipAddress = "unknown";
     }
     const userAgent = UserAgent.parse(req.headers['user-agent']);
-    const device = /Mobile/i.test(userAgent)? 'Mobile' : 'Desktop';
+    const device = /Mobile/i.test(userAgent) ? 'Mobile' : 'Desktop';
     const browser = `${userAgent.browser} ${userAgent.version}`;
     const os = userAgent.os;
 
-    
+
     const loginInfo = new Login({
       userId: existinguser._id,
       timestamp: new Date(),
@@ -64,15 +66,15 @@ export const login = async (req, res) => {
       os,
       ipAddress,
     });
-    
+
 
     await loginInfo.save()
-  .then((savedEntry) => {
-    console.log('Login history saved:', savedEntry);
-  })
-  .catch((error) => {
-    console.error('Error saving login history:', error);
-  });
+      .then((savedEntry) => {
+        console.log('Login history saved:', savedEntry);
+      })
+      .catch((error) => {
+        console.error('Error saving login history:', error);
+      });
 
     res.status(200).json({ result: existinguser, token });
   } catch (error) {
@@ -81,7 +83,7 @@ export const login = async (req, res) => {
   }
 };
 
-export const loginHistory = async(req, res) => {
+export const loginHistory = async (req, res) => {
   const { userId } = req.params;
 
   try {
